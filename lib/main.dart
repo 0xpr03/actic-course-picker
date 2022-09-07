@@ -1,31 +1,50 @@
+import 'dart:io';
+import 'package:actic_booking/screens/login.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+//import 'package:window_size/window_size.dart';
+
+import 'common/theme.dart';
+import 'models/account.dart';
 
 void main() {
+  //setupWindow();
   runApp(const MyApp());
 }
+
+const double windowWidth = 360;
+const double windowHeight = 640;
+
+// void setupWindow() {
+//   if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+//     WidgetsFlutterBinding.ensureInitialized();
+//     setWindowTitle('Provider Counter');
+//     setWindowMinSize(const Size(windowWidth, windowHeight));
+//     setWindowMaxSize(const Size(windowWidth, windowHeight));
+//     getCurrentScreen().then((screen) {
+//       setWindowFrame(Rect.fromCenter(
+//         center: screen!.frame.center,
+//         width: windowWidth,
+//         height: windowHeight,
+//       ));
+//     });
+//   }
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+    return MultiProvider(
+        providers: [Provider(create: (context) => LoginModel())],
+        child: MaterialApp(
+          title: 'Actic Course Booking',
+          theme: appTheme,
+          initialRoute: '/',
+          routes: {'/': (context) => const MyLogin()},
+        ));
   }
 }
 
