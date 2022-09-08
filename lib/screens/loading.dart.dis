@@ -1,0 +1,33 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../models/account.dart';
+
+class LoadingPage extends StatefulWidget {
+  LoadingPage({super.key});
+
+  @override
+  _LoadingPageState createState() => _LoadingPageState();
+}
+
+class _LoadingPageState extends State<LoadingPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var data = context.watch<AccountModel>();
+    data.loadFromPrefs().then((model) => {
+          if (model.token != null)
+            {Navigator.of(context).pushReplacementNamed('/home')}
+          else
+            {Navigator.of(context).pushReplacementNamed('/login')}
+        });
+
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+}
