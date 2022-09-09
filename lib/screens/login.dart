@@ -87,28 +87,25 @@ class LoginWidgetState extends State<LoginWidget> {
                         Uri.parse('https://webapi.actic.se/login'),
                         body: json.encode(formData),
                         headers: {'content-type': 'application/json'});
+                    if (!mounted) return;
                     if (result.statusCode == 200) {
                       try {
                         final parsed = json.decode(result.body);
                         final loginData = LoginData.fromJson(parsed);
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('Welcome ${loginData.firstName}')));
                         data.token = loginData.accessToken;
                         await data.storeToPrefs();
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('Welcome ${loginData.firstName}')));
                         await Navigator.of(context)
                             .pushReplacementNamed('/home');
                       } catch (e) {
                         dialogHelper('Failed to parse login data: $e', context);
                       }
-
-                      //_showDialog('Successfully signed in.');
-                      //_showDialog('Unable to sign in.');
                     } else {
                       dialogHelper('Something went wrong. ${result.statusCode}',
                           context);
-                      //_showDialog('Something went wrong. Please try again.');
                     }
-                    //Navigator.pushReplacementNamed(context, '/catalog');
                   }
                 },
                 style: ElevatedButton.styleFrom(
