@@ -1,40 +1,47 @@
 import 'dart:convert';
 
-import 'package:actic_booking/models/account.dart';
+import 'package:actic_booking/models/state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/login.dart';
+import '../models/account.dart';
 
 const loginData = 'login_data';
-const accessToken = 'access_token';
+const accountData = 'account_data';
 
-Future<LoginModel?> loginFromPrefs() async {
+Future<LoginData?> loginDataFromPrefs() async {
   final prefs = await SharedPreferences.getInstance();
 
   final String? dataRaw = prefs.getString(loginData);
   if (dataRaw != null) {
     final decoded = json.decode(dataRaw);
     if (decoded != null) {
-      final data = LoginModel.fromJson(decoded);
+      final data = LoginData.fromJson(decoded);
       return data;
     }
   }
   return null;
 }
 
-Future<void> loginToPrefs(LoginModel? model) async {
+Future<void> loginDataToPrefs(LoginData? model) async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString(loginData, json.encode(model?.toJson()));
 }
 
-Future<String?> tokenFromPrefs() async {
+Future<void> accountDataToPrefs(AccountData? model) async {
   final prefs = await SharedPreferences.getInstance();
-
-  return prefs.getString(accessToken);
+  await prefs.setString(loginData, json.encode(model?.toJson()));
 }
 
-Future<void> tokenToPrefs(String? token) async {
-  if (token == null) return;
+Future<AccountData?> accountDataFromPrefs() async {
   final prefs = await SharedPreferences.getInstance();
-  await prefs.setString(accessToken, token);
+
+  final String? dataRaw = prefs.getString(loginData);
+  if (dataRaw != null) {
+    final decoded = json.decode(dataRaw);
+    if (decoded != null) {
+      final data = AccountData.fromJson(decoded);
+      return data;
+    }
+  }
+  return null;
 }

@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 //import 'package:window_size/window_size.dart';
 
 import 'common/theme.dart';
-import 'models/account.dart';
+import 'models/state.dart';
 import 'screens/home.dart';
 import 'screens/logout.dart';
 
@@ -38,13 +38,13 @@ const double windowHeight = 640;
 // }
 
 class MyApp extends StatelessWidget {
-  final AccountModel model;
+  final AccountState model;
   const MyApp({required this.model, super.key});
 
   @override
   Widget build(BuildContext context) {
     final String initialRoute;
-    if (model.token != null) {
+    if (model.account != null) {
       initialRoute = '/home';
     } else {
       initialRoute = '/login';

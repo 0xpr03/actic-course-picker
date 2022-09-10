@@ -1,63 +1,26 @@
-import 'package:flutter/cupertino.dart';
-import 'package:json_annotation/json_annotation.dart';
+/// Data retrieved on login
+class AccountData {
+  String accessToken;
+  String firstName;
+  String lastName;
+  int centerId;
+  int userId;
 
-import '../common/storage.dart';
+  AccountData(this.accessToken, this.firstName, this.lastName, this.centerId,
+      this.userId);
 
-class AccountModel extends ChangeNotifier {
-  LoginModel? _loginData;
-  String? _accessToken;
-
-  AccountModel(String? accessToken, LoginModel? loginData) {
-    _accessToken = accessToken;
-    _loginData = loginData;
-  }
-
-  LoginModel? get login => _loginData;
-
-  String? get token => _accessToken;
-
-  set loginData(LoginModel newLogin) {
-    _loginData = newLogin;
-    notifyListeners();
-  }
-
-  /// Store model to preferences
-  Future<void> storeToPrefs() async {
-    await tokenToPrefs(token);
-    await loginToPrefs(login);
-  }
-
-  set token(String? token) {
-    _accessToken = token;
-    notifyListeners();
-  }
-}
-
-@JsonSerializable()
-class LoginModel {
-  LoginModel({this.username, this.password});
-  String? username;
-  String? password;
+  AccountData.fromJson(Map<String, dynamic> json)
+      : accessToken = json['accessToken'],
+        firstName = json['person']['firstName'],
+        lastName = json['person']['lastName'],
+        centerId = json['person']['personId']['center'],
+        userId = json['person']['personId']['id'];
 
   Map<String, dynamic> toJson() => {
-        'username': username,
-        'password': password,
+        'accessToken': accessToken,
+        'firstName': firstName,
+        'lastName': lastName,
+        'centerId': centerId,
+        'userId': userId,
       };
-
-  LoginModel.fromJson(Map<String, dynamic> json)
-      : username = json['username'],
-        password = json['password'];
-}
-
-/// Load model data from preferences
-Future<AccountModel> loadFromPrefs() async {
-  final lToken = await tokenFromPrefs();
-  final lModel = await loginFromPrefs();
-  print('Loaded $lToken $lModel');
-  var model = AccountModel(lToken, lModel);
-  if (lModel != null) {
-    model.loginData = lModel;
-  }
-  model.token = lToken;
-  return model;
 }

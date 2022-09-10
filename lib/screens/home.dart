@@ -4,12 +4,12 @@
 
 import 'dart:convert';
 
-import 'package:actic_booking/models/account.dart';
+import 'package:actic_booking/models/state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
-import '../models/login.dart';
+import '../models/account.dart';
 import 'dialog.dart';
 
 class HomeWidget extends StatefulWidget {
@@ -27,7 +27,7 @@ class HomeWidget extends StatefulWidget {
 class HomeWidgetState extends State<HomeWidget> {
   @override
   Widget build(BuildContext context) {
-    var data = context.watch<AccountModel>();
+    var data = context.watch<AccountState>();
 
     return Scaffold(
       body: Text('Home'),

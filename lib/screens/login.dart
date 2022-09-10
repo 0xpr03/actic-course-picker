@@ -4,12 +4,12 @@
 
 import 'dart:convert';
 
-import 'package:actic_booking/models/account.dart';
+import 'package:actic_booking/models/state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
-import '../models/login.dart';
+import '../models/account.dart';
 import 'dialog.dart';
 
 class LoginWidget extends StatefulWidget {
@@ -29,8 +29,8 @@ class LoginWidgetState extends State<LoginWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var data = context.watch<AccountModel>();
-    var formData = LoginModel();
+    var accountState = context.watch<AccountState>();
+    var formData = LoginData();
 
     return Scaffold(
         body: Form(
@@ -82,7 +82,6 @@ class LoginWidgetState extends State<LoginWidget> {
                   if (_formKey.currentState!.validate()) {
                     ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Processing Data')));
-                    data.loginData = formData;
                     var result = await widget.httpClient!.post(
                         Uri.parse('https://webapi.actic.se/login'),
                         body: json.encode(formData),
@@ -91,9 +90,11 @@ class LoginWidgetState extends State<LoginWidget> {
                     if (result.statusCode == 200) {
                       try {
                         final parsed = json.decode(result.body);
-                        final loginData = LoginData.fromJson(parsed);
-                        data.token = loginData.accessToken;
-                        await data.storeToPrefs();
+                        final AccountData loginData =
+                            AccountData.fromJson(parsed);
+                        accountState.accountData = loginData;
+                        accountState.loginData = formData;
+                        await accountState.storeToPrefs();
                         if (!mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text('Welcome ${loginData.firstName}')));
