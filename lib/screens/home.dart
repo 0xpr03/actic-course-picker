@@ -101,7 +101,7 @@ class HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
           child: ListView(padding: EdgeInsets.zero, children: [
         DrawerHeader(
           decoration: const BoxDecoration(
-            color: Colors.blue,
+            color: Colors.deepPurple,
           ),
           child: Text('${state.account!.firstName} ${state.account!.lastName}'),
         ),
@@ -110,6 +110,7 @@ class HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
           onTap: () {
             Navigator.pushReplacementNamed(context, '/logout');
           },
+          trailing: const Icon(Icons.logout),
         ),
       ])),
       body: SafeArea(

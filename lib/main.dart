@@ -67,6 +67,8 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Actic Course Booking',
           theme: appTheme,
+          darkTheme: ThemeData.dark(), // standard dark theme
+          themeMode: ThemeMode.system,
           initialRoute: initialRoute,
           routes: {
             '/home': (context) => HomeWidget(httpClient: http.Client()),
