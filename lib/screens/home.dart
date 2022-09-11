@@ -27,14 +27,21 @@ class HomeWidget extends StatefulWidget {
   HomeWidgetState createState() => HomeWidgetState();
 }
 
-class HomeWidgetState extends State<HomeWidget> {
+class HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
   late Future<ClassesFutureValue> _fetchFuture;
+  TabController? _tabController;
   final yourScrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _fetchFuture = fetch();
+  }
+
+  @override
+  void dispose() {
+    _tabController?.dispose();
+    super.dispose();
   }
 
   Future<ClassesFutureValue> fetch() async {
@@ -51,9 +58,31 @@ class HomeWidgetState extends State<HomeWidget> {
     });
   }
 
+  Widget coursesWidget(Map<String, List<Course>> courses) {
+    final dayContent = courses.values.map(courseDayView).toList();
+    _tabController?.dispose();
+    _tabController = TabController(length: dayContent.length, vsync: this);
+    return Column(children: [
+      coursesTabs(courses),
+      Expanded(
+          child: TabBarView(controller: _tabController, children: dayContent))
+    ]);
+  }
+
+  Widget coursesTabs(Map<String, List<Course>> courses) {
+    final tabs = courses.keys.map((day) {
+      return Tab(text: day);
+    }).toList();
+    return TabBar(
+      unselectedLabelColor: Colors.black,
+      labelColor: Colors.blue,
+      controller: _tabController,
+      tabs: tabs,
+    );
+  }
+
   Widget courseDayView(List<Course> courses) {
     return ListView.builder(
-        controller: yourScrollController,
         physics:
             const AlwaysScrollableScrollPhysics(), // allow refresh with 0 elements
         itemCount: courses.length,
@@ -102,15 +131,13 @@ class HomeWidgetState extends State<HomeWidget> {
             } else if (snapshot.hasData) {
               final data = snapshot.data!;
               courses.update(data.item2['from'], data.item2['to'], data.item1);
-              return Scrollbar(
-                  controller: yourScrollController,
-                  child: RefreshIndicator(
-                    child: courseDayView(data.item1['2022-09-11']!),
-                    onRefresh: () {
-                      refreshData();
-                      return _fetchFuture;
-                    },
-                  ));
+              return RefreshIndicator(
+                child: coursesWidget(data.item1!),
+                onRefresh: () {
+                  refreshData();
+                  return _fetchFuture;
+                },
+              );
             } else {
               return const Center(
                 child: CircularProgressIndicator(),
@@ -130,7 +157,7 @@ class CourseWidget extends StatelessWidget {
     return Card(
         child: ListTile(
       title: Text(course.name),
-      subtitle: Text('${course.startTime}\n${course.bookingState}'),
+      subtitle: Text(course.bookingState),
       // trailing: Text(course.bookingState),
       leading: Text(course.startTime),
     ));
