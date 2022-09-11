@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/account.dart';
-import 'dialog.dart';
+import '../common/dialog.dart';
 
 class LoginWidget extends StatefulWidget {
   final http.Client? httpClient;
@@ -46,6 +46,7 @@ class LoginWidgetState extends State<LoginWidget> {
                 style: Theme.of(context).textTheme.displayLarge,
               ),
               TextFormField(
+                initialValue: accountState.login?.username,
                 decoration: const InputDecoration(
                   hintText: 'Actic Email',
                 ),
@@ -60,6 +61,7 @@ class LoginWidgetState extends State<LoginWidget> {
                 },
               ),
               TextFormField(
+                initialValue: accountState.login?.password,
                 decoration: const InputDecoration(
                   hintText: 'Password',
                 ),
@@ -91,7 +93,7 @@ class LoginWidgetState extends State<LoginWidget> {
                       try {
                         final parsed = json.decode(result.body);
                         final AccountData loginData =
-                            AccountData.fromJson(parsed);
+                            AccountData.fromAPIJson(parsed);
                         accountState.accountData = loginData;
                         accountState.loginData = formData;
                         await accountState.storeToPrefs();

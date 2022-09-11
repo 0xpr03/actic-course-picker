@@ -40,11 +40,12 @@ dependencies:
   http: ^0.13.5
   json_annotation: ^4.6.0
   shared_preferences: ^2.0.15
+  tuple: ^2.0.0
   # plugin is not yet part of the flutter framework
-  #window_size:
-  #  git:
-  #    url: https://github.com/google/flutter-desktop-embedding.git
-  #    path: plugins/window_size
+  window_size:
+    git:
+      url: https://github.com/google/flutter-desktop-embedding.git
+      path: plugins/window_size
 
 dev_dependencies:
   flutter_test:

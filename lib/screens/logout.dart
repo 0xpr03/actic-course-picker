@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/account.dart';
-import 'dialog.dart';
+import '../common/dialog.dart';
 
 class LogoutWidget extends StatefulWidget {
   final http.Client? httpClient;
@@ -26,11 +26,18 @@ class LogoutWidget extends StatefulWidget {
 
 class LogoutWidgetState extends State<LogoutWidget> {
   @override
-  Widget build(BuildContext context) {
-    var data = context.watch<AccountState>();
+  void initState() {
+    var state = context.watch<AccountState>();
+    state
+        .removeAccountData()
+        .then((value) => Navigator.of(context).pushReplacementNamed('/login'));
+    super.initState();
+  }
 
-    return Scaffold(
-      body: Text('Logout'),
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Text('Logging out..'),
     );
   }
 }

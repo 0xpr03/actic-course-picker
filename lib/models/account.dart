@@ -4,17 +4,26 @@ class AccountData {
   String firstName;
   String lastName;
   int centerId;
-  int userId;
+  String userId;
 
   AccountData(this.accessToken, this.firstName, this.lastName, this.centerId,
       this.userId);
 
-  AccountData.fromJson(Map<String, dynamic> json)
+  /// Parse from http API json
+  AccountData.fromAPIJson(Map<String, dynamic> json)
       : accessToken = json['accessToken'],
         firstName = json['person']['firstName'],
         lastName = json['person']['lastName'],
         centerId = json['person']['personId']['center'],
-        userId = json['person']['personId']['id'];
+        userId = json['person']['personId']['externalId'];
+
+  /// Parse from storage json
+  AccountData.fromJson(Map<String, dynamic> json)
+      : accessToken = json['accessToken'],
+        firstName = json['firstName'],
+        lastName = json['lastName'],
+        centerId = json['centerId'],
+        userId = json['userId'];
 
   Map<String, dynamic> toJson() => {
         'accessToken': accessToken,

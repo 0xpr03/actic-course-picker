@@ -1,8 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../common/storage.dart';
 import 'account.dart';
+import 'classes.dart';
 
 class AccountState extends ChangeNotifier {
   LoginData? _loginData;
@@ -12,13 +13,12 @@ class AccountState extends ChangeNotifier {
 
   LoginData? get login => _loginData;
   AccountData? get account => _accountData;
-
-  set loginData(LoginData newLogin) {
+  set loginData(LoginData? newLogin) {
     _loginData = newLogin;
     notifyListeners();
   }
 
-  set accountData(AccountData accountData) {
+  set accountData(AccountData? accountData) {
     _accountData = accountData;
     notifyListeners();
   }
@@ -27,6 +27,24 @@ class AccountState extends ChangeNotifier {
   Future<void> storeToPrefs() async {
     await loginDataToPrefs(login);
     await accountDataToPrefs(account);
+  }
+
+  /// Remove login token and account store
+  ///
+  /// Use this to invalidate the current login token & cached acc data
+  Future<void> removeAccountData() async {
+    accountData = null;
+    await storeToPrefs();
+  }
+
+  /// Remove account login data completely
+  ///
+  /// Use this to completely erase an account
+  Future<void> removeLoginData() async {
+    _loginData = null;
+    _accountData = null;
+    await storeToPrefs();
+    notifyListeners();
   }
 }
 

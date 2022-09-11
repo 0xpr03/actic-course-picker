@@ -1,18 +1,23 @@
+import 'dart:io';
+
 import 'package:actic_booking/screens/login.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
-//import 'package:window_size/window_size.dart';
+import 'package:window_size/window_size.dart';
 
 import 'common/theme.dart';
+import 'models/classes.dart';
 import 'models/state.dart';
 import 'screens/home.dart';
 import 'screens/logout.dart';
+import 'screens/relogin.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   var state = await loadFromPrefs();
-  //setupWindow();
+  setupWindow();
   runApp(MyApp(
     model: state,
   ));
@@ -21,21 +26,21 @@ void main() async {
 const double windowWidth = 360;
 const double windowHeight = 640;
 
-// void setupWindow() {
-//   if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-//     WidgetsFlutterBinding.ensureInitialized();
-//     setWindowTitle('Provider Counter');
-//     setWindowMinSize(const Size(windowWidth, windowHeight));
-//     setWindowMaxSize(const Size(windowWidth, windowHeight));
-//     getCurrentScreen().then((screen) {
-//       setWindowFrame(Rect.fromCenter(
-//         center: screen!.frame.center,
-//         width: windowWidth,
-//         height: windowHeight,
-//       ));
-//     });
-//   }
-// }
+void setupWindow() {
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+    WidgetsFlutterBinding.ensureInitialized();
+    setWindowTitle('Provider Counter');
+    setWindowMinSize(const Size(windowWidth, windowHeight));
+    setWindowMaxSize(const Size(windowWidth, windowHeight));
+    getCurrentScreen().then((screen) {
+      setWindowFrame(Rect.fromCenter(
+        center: screen!.frame.center,
+        width: windowWidth,
+        height: windowHeight,
+      ));
+    });
+  }
+}
 
 class MyApp extends StatelessWidget {
   final AccountState model;
@@ -50,8 +55,15 @@ class MyApp extends StatelessWidget {
       initialRoute = '/login';
     }
 
-    return ChangeNotifierProvider(
-        create: (context) => model,
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AccountState>(
+            create: (context) => model,
+          ),
+          ChangeNotifierProvider<Classes>(
+            create: (context) => Classes(),
+          )
+        ],
         child: MaterialApp(
           title: 'Actic Course Booking',
           theme: appTheme,
@@ -59,7 +71,8 @@ class MyApp extends StatelessWidget {
           routes: {
             '/home': (context) => HomeWidget(httpClient: http.Client()),
             '/login': (context) => LoginWidget(httpClient: http.Client()),
-            '/logout': (context) => LogoutWidget(httpClient: http.Client())
+            '/logout': (context) => LogoutWidget(httpClient: http.Client()),
+            '/relogin': (context) => ReLoginWidget(httpClient: http.Client())
           },
         ));
   }
