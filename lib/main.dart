@@ -23,13 +23,13 @@ void main() async {
   ));
 }
 
-const double windowWidth = 360;
-const double windowHeight = 640;
+const double windowWidth = 720;
+const double windowHeight = 1280;
 
 void setupWindow() {
   if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
     WidgetsFlutterBinding.ensureInitialized();
-    setWindowTitle('Provider Counter');
+    setWindowTitle('Actic Course Booking');
     setWindowMinSize(const Size(windowWidth, windowHeight));
     setWindowMaxSize(const Size(windowWidth, windowHeight));
     getCurrentScreen().then((screen) {

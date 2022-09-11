@@ -6,11 +6,13 @@ import 'dart:convert';
 
 import 'package:actic_booking/common/api.dart';
 import 'package:actic_booking/models/state.dart';
+//import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:table_calendar/table_calendar.dart';
 import 'package:tuple/tuple.dart';
-
+import 'package:intl/intl.dart';
 import '../models/account.dart';
 import '../common/dialog.dart';
 import '../models/classes.dart';
@@ -30,11 +32,14 @@ class HomeWidget extends StatefulWidget {
 class HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
   late Future<ClassesFutureValue> _fetchFuture;
   TabController? _tabController;
+  late DateTime _selectedDate;
   final yourScrollController = ScrollController();
+  final DateFormat keyDateFormat = DateFormat("yyyy'-'MM'-'dd");
 
   @override
   void initState() {
     super.initState();
+    _resetSelectedDate();
     _fetchFuture = fetch();
   }
 
@@ -58,27 +63,19 @@ class HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
     });
   }
 
-  Widget coursesWidget(Map<String, List<Course>> courses) {
-    final dayContent = courses.values.map(courseDayView).toList();
-    _tabController?.dispose();
-    _tabController = TabController(length: dayContent.length, vsync: this);
-    return Column(children: [
-      coursesTabs(courses),
-      Expanded(
-          child: TabBarView(controller: _tabController, children: dayContent))
-    ]);
+  void _resetSelectedDate() {
+    _selectedDate = DateTime.now();
   }
 
-  Widget coursesTabs(Map<String, List<Course>> courses) {
-    final tabs = courses.keys.map((day) {
-      return Tab(text: day);
-    }).toList();
-    return TabBar(
-      unselectedLabelColor: Colors.black,
-      labelColor: Colors.blue,
-      controller: _tabController,
-      tabs: tabs,
-    );
+  Widget coursesWidget(Map<String, List<Course>> courses) {
+    final key = keyDateFormat.format(_selectedDate);
+    final dayContent = courses[key];
+
+    if (dayContent != null) {
+      return courseDayView(dayContent);
+    } else {
+      return const Center(child: Text('No courses for this day.'));
+    }
   }
 
   Widget courseDayView(List<Course> courses) {
@@ -99,24 +96,58 @@ class HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
     var courses = context.watch<Classes>();
 
     return Scaffold(
-        appBar: AppBar(title: const Text('Home')),
-        drawer: Drawer(
-            child: ListView(padding: EdgeInsets.zero, children: [
-          DrawerHeader(
-            decoration: const BoxDecoration(
-              color: Colors.blue,
-            ),
-            child:
-                Text('${state.account!.firstName} ${state.account!.lastName}'),
+      appBar: AppBar(title: const Text('Home')),
+      drawer: Drawer(
+          child: ListView(padding: EdgeInsets.zero, children: [
+        DrawerHeader(
+          decoration: const BoxDecoration(
+            color: Colors.blue,
           ),
-          ListTile(
-            title: const Text('Logout'),
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/logout');
-            },
-          ),
-        ])),
-        body: FutureBuilder<ClassesFutureValue>(
+          child: Text('${state.account!.firstName} ${state.account!.lastName}'),
+        ),
+        ListTile(
+          title: const Text('Logout'),
+          onTap: () {
+            Navigator.pushReplacementNamed(context, '/logout');
+          },
+        ),
+      ])),
+      body: SafeArea(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        // CalendarTimeline(
+        //   showYears: false,
+        //   initialDate: _selectedDate,
+        //   firstDate: DateTime.now().subtract(const Duration(days: 30)),
+        //   lastDate: DateTime.now().add(const Duration(days: 30)),
+        //   onDateSelected: (date) => setState(() => _selectedDate = date),
+        //   leftMargin: 5,
+        //   // monthColor: Colors.white70,
+        //   // dayColor: Colors.teal[200],
+        //   // dayNameColor: Color(0xFF333A47),
+        //   // activeDayColor: Colors.white,
+        //   // activeBackgroundDayColor: Colors.redAccent[100],
+        //   // dotsColor: Color(0xFF333A47),
+        //   // selectableDayPredicate: (date) => date.day != 23,
+        //   // locale: 'en',
+        // ),
+        TableCalendar(
+          firstDay: DateTime.now().subtract(const Duration(days: 30)),
+          lastDay: DateTime.now().add(const Duration(days: 30)),
+          focusedDay: _selectedDate,
+          selectedDayPredicate: (day) {
+            return isSameDay(_selectedDate, day);
+          },
+          availableCalendarFormats: const {CalendarFormat.week: 'week'},
+          calendarFormat: CalendarFormat.week,
+          headerVisible: false,
+          availableGestures: AvailableGestures.horizontalSwipe,
+          rangeSelectionMode: RangeSelectionMode.disabled,
+          onDaySelected: (selectedDay, focusedDay) =>
+              setState(() => _selectedDate = selectedDay),
+        ),
+        Expanded(
+            child: FutureBuilder<ClassesFutureValue>(
           future: _fetchFuture,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
@@ -144,7 +175,21 @@ class HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
               );
             }
           },
-        ));
+        ))
+        // CalendarStrip(
+        //   startDate: DateTime.now().subtract(const Duration(days: 30)),
+        //   endDate: DateTime.now().add(const Duration(days: 30)),
+        //   onDateSelected: (date) => setState(() => _selectedDate = date),
+        //   // onWeekSelected: onWeekSelect,
+        //   // dateTileBuilder: dateTileBuilder,
+        //   iconColor: Colors.black87,
+        //   // monthNameWidget: _monthNameWidget,
+        //   // markedDates: markedDates,
+        //   containerDecoration: BoxDecoration(color: Colors.black12),
+        // )
+      ])),
+      //
+    );
   }
 }
 
