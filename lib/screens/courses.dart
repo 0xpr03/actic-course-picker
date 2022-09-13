@@ -227,7 +227,10 @@ class CourseWidget extends StatelessWidget {
     return Card(
         child: ListTile(
       title: Text(course.name),
-      subtitle: Text(course.bookingState),
+      subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(course.bookingState),
+        Text('${course.bookedCount} / ${course.classCapacity}'),
+      ]),
       // trailing: Text(course.bookingState),
       leading: Text(course.startTime),
       textColor: color,
