@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:actic_booking/common/api.dart';
 import 'package:actic_booking/models/state.dart';
+import 'package:actic_booking/screens/relogin.dart';
 //import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,20 +17,25 @@ import 'package:intl/intl.dart';
 import '../models/account.dart';
 import '../common/dialog.dart';
 import '../models/classes.dart';
+import 'coursedetail.dart';
+import 'logout.dart';
 
-class HomeWidget extends StatefulWidget {
+class CoursesOverviewWidget extends StatefulWidget {
   final http.Client? httpClient;
 
-  const HomeWidget({
+  static const routeName = '/courses';
+
+  const CoursesOverviewWidget({
     this.httpClient,
     super.key,
   });
 
   @override
-  HomeWidgetState createState() => HomeWidgetState();
+  CoursesOverviewWidgetState createState() => CoursesOverviewWidgetState();
 }
 
-class HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
+class CoursesOverviewWidgetState extends State<CoursesOverviewWidget>
+    with TickerProviderStateMixin {
   late Future<ClassesFutureValue> _fetchFuture;
   TabController? _tabController;
   late DateTime _selectedDate;
@@ -108,7 +114,7 @@ class HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
         ListTile(
           title: const Text('Logout'),
           onTap: () {
-            Navigator.pushReplacementNamed(context, '/logout');
+            Navigator.pushReplacementNamed(context, LogoutWidget.routeName);
           },
           trailing: const Icon(Icons.logout),
         ),
@@ -154,7 +160,7 @@ class HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
             if (snapshot.hasError) {
               if (snapshot.error! is ApiLoginInvalidException) {
                 WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  Navigator.of(context).pushNamed('/relogin');
+                  Navigator.of(context).pushNamed(ReLoginWidget.routeName);
                 });
               }
               return const Center(
@@ -200,12 +206,32 @@ class CourseWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color color;
+    Null Function()? onTap;
+    switch (course.bookingState) {
+      case 'BOOKABLE':
+      case 'BOOKABLE_WAITINGLIST':
+        color = Colors.black; // TODO: don't hardcode colors
+        onTap = () {
+          Navigator.pushNamed(
+            context,
+            CourseDetailWidget.routeName,
+            arguments: ScreenArguments(course),
+          );
+        };
+        break;
+      default:
+        onTap = null;
+        color = Colors.grey;
+    }
     return Card(
         child: ListTile(
       title: Text(course.name),
       subtitle: Text(course.bookingState),
       // trailing: Text(course.bookingState),
       leading: Text(course.startTime),
+      textColor: color,
+      onTap: onTap,
     ));
   }
 }

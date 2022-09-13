@@ -16,6 +16,8 @@ import '../common/dialog.dart';
 class ReLoginWidget extends StatefulWidget {
   final http.Client? httpClient;
 
+  static const routeName = '/relogin';
+
   const ReLoginWidget({
     this.httpClient,
     super.key,

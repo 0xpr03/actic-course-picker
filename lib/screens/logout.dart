@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:actic_booking/models/state.dart';
+import 'package:actic_booking/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -14,6 +15,8 @@ import '../common/dialog.dart';
 
 class LogoutWidget extends StatefulWidget {
   final http.Client? httpClient;
+
+  static const routeName = '/logout';
 
   const LogoutWidget({
     this.httpClient,
@@ -28,9 +31,8 @@ class LogoutWidgetState extends State<LogoutWidget> {
   @override
   void initState() {
     var state = context.watch<AccountState>();
-    state
-        .removeAccountData()
-        .then((value) => Navigator.of(context).pushReplacementNamed('/login'));
+    state.removeAccountData().then((value) =>
+        Navigator.of(context).pushReplacementNamed(LoginWidget.routeName));
     super.initState();
   }
 

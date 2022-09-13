@@ -67,10 +67,16 @@ Tuple2<Map<String, List<Course>>, Map<String, dynamic>> parseClasses(
 }
 
 class Course {
-  Course(this.name, this.startTime, this.bookingState, this.bookingIdCompound);
   String name;
   String startTime;
-  String bookingState; // BOOKED BOOKABLE BOOKABLE_WAITINGLIST NOT_BOOKABLE_DATE
+  // BOOKED BOOKABLE BOOKABLE_WAITINGLIST NOT_BOOKABLE_DATE
+  String bookingState;
+  String? description;
+  int classCapacity;
+  int bookedCount;
+  int duration;
+  int timestamp;
+  String? instructorNames;
 
   /// ID for booking
   String bookingIdCompound;
@@ -79,5 +85,11 @@ class Course {
       : name = json['name'],
         startTime = json['startTime'],
         bookingState = json['bookingState'],
-        bookingIdCompound = json['bookingIdCompound'];
+        bookingIdCompound = json['bookingIdCompound'],
+        description = json['description'],
+        classCapacity = json['classCapacity'],
+        bookedCount = json['bookedCount'],
+        duration = json['duration'],
+        timestamp = json['timestamp'],
+        instructorNames = json['instructorNames'];
 }

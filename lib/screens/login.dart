@@ -11,9 +11,12 @@ import 'package:http/http.dart' as http;
 
 import '../models/account.dart';
 import '../common/dialog.dart';
+import 'courses.dart';
 
 class LoginWidget extends StatefulWidget {
   final http.Client? httpClient;
+
+  static const routeName = '/login';
 
   const LoginWidget({
     this.httpClient,
@@ -100,8 +103,8 @@ class LoginWidgetState extends State<LoginWidget> {
                         if (!mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text('Welcome ${loginData.firstName}')));
-                        await Navigator.of(context)
-                            .pushReplacementNamed('/home');
+                        await Navigator.of(context).pushReplacementNamed(
+                            CoursesOverviewWidget.routeName);
                       } catch (e) {
                         dialogHelper('Failed to parse login data: $e', context);
                       }

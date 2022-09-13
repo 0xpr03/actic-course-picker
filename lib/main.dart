@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:actic_booking/screens/login.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +9,9 @@ import 'package:window_size/window_size.dart';
 import 'common/theme.dart';
 import 'models/classes.dart';
 import 'models/state.dart';
-import 'screens/home.dart';
+import 'screens/login.dart';
+import 'screens/coursedetail.dart';
+import 'screens/courses.dart';
 import 'screens/logout.dart';
 import 'screens/relogin.dart';
 
@@ -50,9 +51,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final String initialRoute;
     if (model.account != null) {
-      initialRoute = '/home';
+      initialRoute = CoursesOverviewWidget.routeName;
     } else {
-      initialRoute = '/login';
+      initialRoute = LoginWidget.routeName;
     }
 
     return MultiProvider(
@@ -71,10 +72,16 @@ class MyApp extends StatelessWidget {
           themeMode: ThemeMode.system,
           initialRoute: initialRoute,
           routes: {
-            '/home': (context) => HomeWidget(httpClient: http.Client()),
-            '/login': (context) => LoginWidget(httpClient: http.Client()),
-            '/logout': (context) => LogoutWidget(httpClient: http.Client()),
-            '/relogin': (context) => ReLoginWidget(httpClient: http.Client())
+            CoursesOverviewWidget.routeName: (context) =>
+                CoursesOverviewWidget(httpClient: http.Client()),
+            CourseDetailWidget.routeName: (context) =>
+                CourseDetailWidget(httpClient: http.Client()),
+            LoginWidget.routeName: (context) =>
+                LoginWidget(httpClient: http.Client()),
+            LogoutWidget.routeName: (context) =>
+                LogoutWidget(httpClient: http.Client()),
+            ReLoginWidget.routeName: (context) =>
+                ReLoginWidget(httpClient: http.Client())
           },
         ));
   }
