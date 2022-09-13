@@ -25,16 +25,9 @@ class Classes extends ChangeNotifier {
     updated = DateTime.now();
     //notifyListeners();
   }
-
-  void book(AccountState model, Course course) async {
-    // POST
-    final url =
-        'https://webapi.actic.se/persons/${model.account!.userId}/participations/${course.bookingIdCompound}';
-  }
 }
 
-typedef ClassesFutureValue
-    = Tuple2<Map<String, List<Course>>, Map<String, dynamic>>;
+typedef ClassesFutureValue = Tuple2<Map<String, List<Course>>, JSON>;
 
 Future<ClassesFutureValue> fetchClasses(
     String token, String userId, int centerId, http.Client client) async {
@@ -53,13 +46,66 @@ Future<ClassesFutureValue> fetchClasses(
   return compute(parseClasses, result.body);
 }
 
-Tuple2<Map<String, List<Course>>, Map<String, dynamic>> parseClasses(
-    String responseBody) {
+Future<Course> book(
+    AccountState state, Course course, http.Client client) async {
+  // POST
+  final url =
+      'https://webapi.actic.se/persons/${state.account!.userId}/participations/${course.bookingIdCompound}';
+  final result = await client.post(
+      Uri.parse(
+        url,
+      ),
+      headers: {
+        'Access-Token': state.account!.accessToken,
+      });
+  return await compute((value) {
+    final decoded = json.decode(value);
+    if (kDebugMode) {
+      print(decoded);
+    }
+    if (isLoggedOut(decoded)) {
+      throw ApiLoginInvalidException();
+    }
+    assertSuccess(decoded);
+    return Course.fromJson(decoded['classData']!);
+  }, result.body);
+}
+
+Future<void> unbook(
+    AccountState state, Course course, http.Client client) async {
+  if (course.unbookingIdCompound == null) {
+    throw Exception(
+        'No unbookingIdCompound for course ${course.bookingIdCompound}');
+  }
+  // POST
+  final url =
+      'https://webapi.actic.se/persons/${state.account!.userId}/participations/${course.bookingIdCompound}/${course.unbookingIdCompound}';
+  final result = await client.delete(
+      Uri.parse(
+        url,
+      ),
+      headers: {
+        'Access-Token': state.account!.accessToken,
+      });
+  return await compute((value) {
+    final decoded = json.decode(value);
+    if (kDebugMode) {
+      print(decoded);
+    }
+    if (isLoggedOut(decoded)) {
+      throw ApiLoginInvalidException();
+    }
+    assertSuccess(decoded);
+    return decoded;
+  }, result.body);
+}
+
+Tuple2<Map<String, List<Course>>, JSON> parseClasses(String responseBody) {
   final decoded = json.decode(responseBody);
   if (isLoggedOut(decoded)) {
     throw ApiLoginInvalidException();
   }
-  final Map<String, dynamic> coursesRaw = decoded["classes"];
+  final JSON coursesRaw = decoded["classes"];
   final courses = coursesRaw.map<String, List<Course>>((k, v) {
     return MapEntry(k, v.map<Course>((json) => Course.fromJson(json)).toList());
   });
@@ -69,7 +115,8 @@ Tuple2<Map<String, List<Course>>, Map<String, dynamic>> parseClasses(
 class Course {
   String name;
   String startTime;
-  // BOOKED BOOKABLE BOOKABLE_WAITINGLIST NOT_BOOKABLE_DATE
+
+  /// BOOKED BOOKABLE BOOKABLE_WAITINGLIST NOT_BOOKABLE_DATE
   String bookingState;
   String? description;
   int classCapacity;
@@ -78,10 +125,11 @@ class Course {
   int timestamp;
   String? instructorNames;
 
-  /// ID for booking
+  /// ID for booking, essentially '{json['bookingId']['center']}p{json['bookingId']['id']}'
   String bookingIdCompound;
+  String? unbookingIdCompound;
 
-  Course.fromJson(Map<String, dynamic> json)
+  Course.fromJson(JSON json)
       : name = json['name'],
         startTime = json['startTime'],
         bookingState = json['bookingState'],
@@ -91,5 +139,17 @@ class Course {
         bookedCount = json['bookedCount'],
         duration = json['duration'],
         timestamp = json['timestamp'],
-        instructorNames = json['instructorNames'];
+        instructorNames = json['instructorNames'],
+        unbookingIdCompound = _unbookingIdCompound(json);
+}
+
+String? _unbookingIdCompound(JSON json) {
+  final participation = json['participation'];
+  if (participation != null) {
+    final participationId = participation['participationId'];
+    if (participationId != null) {
+      return '${participationId['center']}p${participationId['id']}';
+    }
+  }
+  return null;
 }

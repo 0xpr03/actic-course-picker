@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../common/api.dart';
 import '../common/storage.dart';
 import 'account.dart';
 import 'classes.dart';
@@ -54,12 +55,12 @@ class LoginData {
   String? username;
   String? password;
 
-  Map<String, dynamic> toJson() => {
+  JSON toJson() => {
         'username': username,
         'password': password,
       };
 
-  LoginData.fromJson(Map<String, dynamic> json)
+  LoginData.fromJson(JSON json)
       : username = json['username'],
         password = json['password'];
 }

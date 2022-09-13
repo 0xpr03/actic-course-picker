@@ -33,7 +33,7 @@ class ReLoginWidgetState extends State<ReLoginWidget> {
     var accountState = context.watch<AccountState>();
 
     return Scaffold(
-      body: FutureBuilder<Map<String, dynamic>>(
+      body: FutureBuilder<JSON>(
           future: fetchLogin(accountState.login!, http.Client()),
           builder: (context, snapshot) {
             if (snapshot.hasError) {

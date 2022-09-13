@@ -58,8 +58,8 @@ class CoursesOverviewWidgetState extends State<CoursesOverviewWidget>
   Future<ClassesFutureValue> fetch() async {
     final state = Provider.of<AccountState>(context, listen: false);
     var account = state.account!;
-    return await fetchClasses(
-        account.accessToken, account.userId, account.centerId, http.Client());
+    return await fetchClasses(account.accessToken, account.userId,
+        account.centerId, widget.httpClient!);
   }
 
   void refreshData() {
@@ -122,22 +122,6 @@ class CoursesOverviewWidgetState extends State<CoursesOverviewWidget>
       body: SafeArea(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // CalendarTimeline(
-        //   showYears: false,
-        //   initialDate: _selectedDate,
-        //   firstDate: DateTime.now().subtract(const Duration(days: 30)),
-        //   lastDate: DateTime.now().add(const Duration(days: 30)),
-        //   onDateSelected: (date) => setState(() => _selectedDate = date),
-        //   leftMargin: 5,
-        //   // monthColor: Colors.white70,
-        //   // dayColor: Colors.teal[200],
-        //   // dayNameColor: Color(0xFF333A47),
-        //   // activeDayColor: Colors.white,
-        //   // activeBackgroundDayColor: Colors.redAccent[100],
-        //   // dotsColor: Color(0xFF333A47),
-        //   // selectableDayPredicate: (date) => date.day != 23,
-        //   // locale: 'en',
-        // ),
         TableCalendar(
           firstDay: DateTime.now().subtract(const Duration(days: 30)),
           lastDay: DateTime.now().add(const Duration(days: 30)),
@@ -183,17 +167,6 @@ class CoursesOverviewWidgetState extends State<CoursesOverviewWidget>
             }
           },
         ))
-        // CalendarStrip(
-        //   startDate: DateTime.now().subtract(const Duration(days: 30)),
-        //   endDate: DateTime.now().add(const Duration(days: 30)),
-        //   onDateSelected: (date) => setState(() => _selectedDate = date),
-        //   // onWeekSelected: onWeekSelect,
-        //   // dateTileBuilder: dateTileBuilder,
-        //   iconColor: Colors.black87,
-        //   // monthNameWidget: _monthNameWidget,
-        //   // markedDates: markedDates,
-        //   containerDecoration: BoxDecoration(color: Colors.black12),
-        // )
       ])),
       //
     );
@@ -211,6 +184,7 @@ class CourseWidget extends StatelessWidget {
     switch (course.bookingState) {
       case 'BOOKABLE':
       case 'BOOKABLE_WAITINGLIST':
+      case 'BOOKED':
         color = Colors.black; // TODO: don't hardcode colors
         onTap = () {
           Navigator.pushNamed(

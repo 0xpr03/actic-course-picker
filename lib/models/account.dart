@@ -1,3 +1,5 @@
+import '../common/api.dart';
+
 /// Data retrieved on login
 class AccountData {
   String accessToken;
@@ -10,7 +12,7 @@ class AccountData {
       this.userId);
 
   /// Parse from http API json
-  AccountData.fromAPIJson(Map<String, dynamic> json)
+  AccountData.fromAPIJson(JSON json)
       : accessToken = json['accessToken'],
         firstName = json['person']['firstName'],
         lastName = json['person']['lastName'],
@@ -18,14 +20,14 @@ class AccountData {
         userId = json['person']['personId']['externalId'];
 
   /// Parse from storage json
-  AccountData.fromJson(Map<String, dynamic> json)
+  AccountData.fromJson(JSON json)
       : accessToken = json['accessToken'],
         firstName = json['firstName'],
         lastName = json['lastName'],
         centerId = json['centerId'],
         userId = json['userId'];
 
-  Map<String, dynamic> toJson() => {
+  JSON toJson() => {
         'accessToken': accessToken,
         'firstName': firstName,
         'lastName': lastName,
