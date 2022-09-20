@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.actic_booking">
+    package="de.aron.heinecke.actic_booking">
     <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="actic_booking"
