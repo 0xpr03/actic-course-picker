@@ -179,13 +179,11 @@ class CourseWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color color;
     Null Function()? onTap;
     switch (course.bookingState) {
       case 'BOOKABLE':
       case 'BOOKABLE_WAITINGLIST':
       case 'BOOKED':
-        color = Colors.black; // TODO: don't hardcode colors
         onTap = () {
           Navigator.pushNamed(
             context,
@@ -196,7 +194,6 @@ class CourseWidget extends StatelessWidget {
         break;
       default:
         onTap = null;
-        color = Colors.grey;
     }
     return Card(
         child: ListTile(
@@ -207,8 +204,8 @@ class CourseWidget extends StatelessWidget {
       ]),
       // trailing: Text(course.bookingState),
       leading: Text(course.startTime),
-      textColor: color,
       onTap: onTap,
+      enabled: onTap != null,
     ));
   }
 }

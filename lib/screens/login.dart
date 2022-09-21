@@ -46,7 +46,6 @@ class LoginWidgetState extends State<LoginWidget> {
             children: [
               Text(
                 'Please Login',
-                style: Theme.of(context).textTheme.displayLarge,
               ),
               TextFormField(
                 initialValue: accountState.login?.username,
