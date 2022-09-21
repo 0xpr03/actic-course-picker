@@ -120,54 +120,64 @@ class CoursesOverviewWidgetState extends State<CoursesOverviewWidget>
         ),
       ])),
       body: SafeArea(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        TableCalendar(
-          firstDay: DateTime.now().subtract(const Duration(days: 30)),
-          lastDay: DateTime.now().add(const Duration(days: 30)),
-          focusedDay: _selectedDate,
-          selectedDayPredicate: (day) {
-            return isSameDay(_selectedDate, day);
-          },
-          availableCalendarFormats: const {CalendarFormat.week: 'week'},
-          calendarFormat: CalendarFormat.week,
-          headerVisible: false,
-          availableGestures: AvailableGestures.horizontalSwipe,
-          rangeSelectionMode: RangeSelectionMode.disabled,
-          onDaySelected: (selectedDay, focusedDay) =>
-              setState(() => _selectedDate = selectedDay),
-        ),
-        Expanded(
-            child: FutureBuilder<ClassesFutureValue>(
-          future: _fetchFuture,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              if (snapshot.error! is ApiLoginInvalidException) {
-                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  Navigator.of(context).pushNamed(ReLoginWidget.routeName);
-                });
-              }
-              return const Center(
-                child: Text('An error has occurred loading courses!'),
-              );
-            } else if (snapshot.hasData) {
-              final data = snapshot.data!;
-              courses.update(data.item2['from'], data.item2['to'], data.item1);
-              return RefreshIndicator(
-                child: coursesWidget(data.item1!),
-                onRefresh: () {
-                  refreshData();
-                  return _fetchFuture;
-                },
-              );
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          },
-        ))
-      ])),
+          child: Container(
+              padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TableCalendar(
+                      firstDay:
+                          DateTime.now().subtract(const Duration(days: 30)),
+                      lastDay: DateTime.now().add(const Duration(days: 30)),
+                      focusedDay: _selectedDate,
+                      selectedDayPredicate: (day) {
+                        return isSameDay(_selectedDate, day);
+                      },
+                      availableCalendarFormats: const {
+                        CalendarFormat.week: 'week'
+                      },
+                      calendarFormat: CalendarFormat.week,
+                      headerVisible: false,
+                      availableGestures: AvailableGestures.horizontalSwipe,
+                      rangeSelectionMode: RangeSelectionMode.disabled,
+                      onDaySelected: (selectedDay, focusedDay) =>
+                          setState(() => _selectedDate = selectedDay),
+                    ),
+                    Expanded(
+                        child: FutureBuilder<ClassesFutureValue>(
+                      future: _fetchFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          if (snapshot.error! is ApiLoginInvalidException) {
+                            WidgetsBinding.instance
+                                .addPostFrameCallback((timeStamp) {
+                              Navigator.of(context)
+                                  .pushNamed(ReLoginWidget.routeName);
+                            });
+                          }
+                          return const Center(
+                            child:
+                                Text('An error has occurred loading courses!'),
+                          );
+                        } else if (snapshot.hasData) {
+                          final data = snapshot.data!;
+                          courses.update(
+                              data.item2['from'], data.item2['to'], data.item1);
+                          return RefreshIndicator(
+                            child: coursesWidget(data.item1!),
+                            onRefresh: () {
+                              refreshData();
+                              return _fetchFuture;
+                            },
+                          );
+                        } else {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      },
+                    ))
+                  ]))),
       //
     );
   }
