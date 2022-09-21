@@ -1,4 +1,4 @@
-package com.example.actic_booking
+package de.aron.heinecke.actic_booking
 
 import io.flutter.embedding.android.FlutterActivity
 
