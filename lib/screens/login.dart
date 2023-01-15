@@ -29,12 +29,23 @@ class LoginWidget extends StatefulWidget {
 
 class LoginWidgetState extends State<LoginWidget> {
   final _formKey = GlobalKey<FormState>();
+  var storeLogin = false;
+  late LoginData formData;
+
+  @override
+  void initState() {
+    var accountState = Provider.of<AccountState>(context, listen: false);
+    accountState.removeAccountData();
+    formData = LoginData();
+    storeLogin = accountState.login?.storeLogin ?? false;
+    formData.username = accountState.login?.username;
+    formData.password = accountState.login?.password;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    var accountState = context.watch<AccountState>();
-    var formData = LoginData();
-
+    var accountState = Provider.of<AccountState>(context, listen: false);
     return Scaffold(
         body: Form(
       key: _formKey,
@@ -79,6 +90,15 @@ class LoginWidgetState extends State<LoginWidget> {
                 },
                 obscureText: true,
               ),
+              CheckboxListTile(
+                value: storeLogin,
+                title: const Text('Store Password'),
+                onChanged: (value) {
+                  setState(() {
+                    storeLogin = value!;
+                  });
+                },
+              ),
               const SizedBox(
                 height: 24,
               ),
@@ -97,6 +117,9 @@ class LoginWidgetState extends State<LoginWidget> {
                         final parsed = json.decode(result.body);
                         final AccountData loginData =
                             AccountData.fromAPIJson(parsed);
+                        if (!storeLogin) {
+                          formData.password = '';
+                        }
                         accountState.accountData = loginData;
                         accountState.loginData = formData;
                         await accountState.storeToPrefs();
@@ -109,7 +132,9 @@ class LoginWidgetState extends State<LoginWidget> {
                         dialogHelper('Failed to parse login data: $e', context);
                       }
                     } else {
-                      dialogHelper('Something went wrong. ${result.statusCode}',
+                      print(result);
+                      dialogHelper(
+                          'Something went wrong. ${result.reasonPhrase} ${result.statusCode}',
                           context);
                     }
                   }

@@ -21,11 +21,14 @@ class AccountState extends ChangeNotifier {
 
   set accountData(AccountData? accountData) {
     _accountData = accountData;
-    notifyListeners();
+    if (accountData != null) {
+      notifyListeners();
+    }
   }
 
   /// Store model to preferences
   Future<void> storeToPrefs() async {
+    print('storeToPrefs');
     await loginDataToPrefs(login);
     await accountDataToPrefs(account);
   }
@@ -45,24 +48,27 @@ class AccountState extends ChangeNotifier {
     _loginData = null;
     _accountData = null;
     await storeToPrefs();
-    notifyListeners();
+    // don't notify listener to prevent loop
   }
 }
 
 @JsonSerializable()
 class LoginData {
-  LoginData({this.username, this.password});
+  LoginData({this.storeLogin = false, this.username, this.password});
   String? username;
   String? password;
+  bool storeLogin;
 
   JSON toJson() => {
         'username': username,
         'password': password,
+        'storeLogin': storeLogin,
       };
 
   LoginData.fromJson(JSON json)
       : username = json['username'],
-        password = json['password'];
+        password = json['password'],
+        storeLogin = json['storeLogin'] ?? false;
 }
 
 /// Load model data from preferences

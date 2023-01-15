@@ -28,16 +28,22 @@ class LogoutWidget extends StatefulWidget {
 }
 
 class LogoutWidgetState extends State<LogoutWidget> {
+  bool initialized = false;
   @override
   void initState() {
-    var state = context.watch<AccountState>();
-    state.removeAccountData().then((value) =>
-        Navigator.of(context).pushReplacementNamed(LoginWidget.routeName));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    var state = Provider.of<AccountState>(context, listen: false);
+    if (!initialized) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        state.removeAccountData().then((value) =>
+            Navigator.of(context).pushReplacementNamed(LoginWidget.routeName));
+      });
+      initialized = true;
+    }
     return const Scaffold(
       body: Text('Logging out..'),
     );

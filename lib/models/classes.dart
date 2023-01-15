@@ -43,6 +43,11 @@ Future<ClassesFutureValue> fetchClasses(
         'Access-Token': token,
       });
 
+  // otherwise we will try to parse HTML 401 unathorized as json..
+  if (result.statusCode >= 400) {
+    throw ApiLoginInvalidException('status code $result.statusCode');
+  }
+
   return compute(parseClasses, result.body);
 }
 
@@ -64,7 +69,7 @@ Future<Course> book(
       print(decoded);
     }
     if (isLoggedOut(decoded)) {
-      throw ApiLoginInvalidException();
+      throw ApiLoginInvalidException('logged out');
     }
     assertSuccess(decoded);
     return Course.fromJson(decoded['classData']!);
@@ -93,7 +98,7 @@ Future<void> unbook(
       print(decoded);
     }
     if (isLoggedOut(decoded)) {
-      throw ApiLoginInvalidException();
+      throw ApiLoginInvalidException('logged out');
     }
     assertSuccess(decoded);
     return decoded;
@@ -103,7 +108,7 @@ Future<void> unbook(
 Tuple2<Map<String, List<Course>>, JSON> parseClasses(String responseBody) {
   final decoded = json.decode(responseBody);
   if (isLoggedOut(decoded)) {
-    throw ApiLoginInvalidException();
+    throw ApiLoginInvalidException('logged out');
   }
   final JSON coursesRaw = decoded["classes"];
   final courses = coursesRaw.map<String, List<Course>>((k, v) {

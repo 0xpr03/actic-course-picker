@@ -7,6 +7,7 @@ import '../models/account.dart';
 
 const loginData = 'login_data';
 const accountData = 'account_data';
+const storeLogin = 'store_login';
 
 Future<LoginData?> loginDataFromPrefs() async {
   final prefs = await SharedPreferences.getInstance();
@@ -30,16 +31,16 @@ Future<void> loginDataToPrefs(LoginData? model) async {
 Future<void> accountDataToPrefs(AccountData? model) async {
   final prefs = await SharedPreferences.getInstance();
   if (model == null) {
-    await prefs.remove(loginData);
+    await prefs.remove(accountData);
   } else {
-    await prefs.setString(loginData, json.encode(model.toJson()));
+    await prefs.setString(accountData, json.encode(model.toJson()));
   }
 }
 
 Future<AccountData?> accountDataFromPrefs() async {
   final prefs = await SharedPreferences.getInstance();
 
-  final String? dataRaw = prefs.getString(loginData);
+  final String? dataRaw = prefs.getString(accountData);
   if (dataRaw != null) {
     final decoded = json.decode(dataRaw);
     if (decoded != null) {
