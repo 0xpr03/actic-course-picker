@@ -58,8 +58,12 @@ class CoursesOverviewWidgetState extends State<CoursesOverviewWidget>
   Future<ClassesFutureValue> fetch() async {
     final state = Provider.of<AccountState>(context, listen: false);
     var account = state.account!;
-    return await fetchClasses(account.accessToken, account.userId,
-        account.centerId, widget.httpClient!);
+    try {
+      return await fetchClasses(account.accessToken, account.userId,
+          account.centerId, widget.httpClient!);
+    } catch (e) {
+      return Future.error(e);
+    }
   }
 
   void refreshData() {
@@ -109,7 +113,7 @@ class CoursesOverviewWidgetState extends State<CoursesOverviewWidget>
           decoration: const BoxDecoration(
             color: Colors.deepPurple,
           ),
-          child: Text('${state.account!.firstName} ${state.account!.lastName}'),
+          child: Text('${state.account?.firstName} ${state.account?.lastName}'),
         ),
         ListTile(
           title: const Text('Logout'),
