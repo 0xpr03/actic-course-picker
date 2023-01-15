@@ -24,8 +24,8 @@ void main() async {
   ));
 }
 
-const double windowWidth = 360;
-const double windowHeight = 640;
+const double windowWidth = 660;
+const double windowHeight = 1240;
 
 void setupWindow() {
   if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
@@ -45,7 +45,8 @@ void setupWindow() {
 
 class MyApp extends StatelessWidget {
   final AccountState model;
-  const MyApp({required this.model, super.key});
+  final http.Client client = http.Client();
+  MyApp({required this.model, super.key}) {}
 
   @override
   Widget build(BuildContext context) {
@@ -73,15 +74,14 @@ class MyApp extends StatelessWidget {
           initialRoute: initialRoute,
           routes: {
             CoursesOverviewWidget.routeName: (context) =>
-                CoursesOverviewWidget(httpClient: http.Client()),
+                CoursesOverviewWidget(httpClient: client),
             CourseDetailWidget.routeName: (context) =>
-                CourseDetailWidget(httpClient: http.Client()),
-            LoginWidget.routeName: (context) =>
-                LoginWidget(httpClient: http.Client()),
+                CourseDetailWidget(httpClient: client),
+            LoginWidget.routeName: (context) => LoginWidget(httpClient: client),
             LogoutWidget.routeName: (context) =>
-                LogoutWidget(httpClient: http.Client()),
+                LogoutWidget(httpClient: client),
             ReLoginWidget.routeName: (context) =>
-                ReLoginWidget(httpClient: http.Client())
+                ReLoginWidget(httpClient: client)
           },
         ));
   }

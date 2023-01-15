@@ -62,6 +62,10 @@ class LoginData {
   JSON toJson() => {
         'username': username,
         'password': password,
+      };
+  JSON toFullJson() => {
+        'username': username,
+        'password': storeLogin ? password : '',
         'storeLogin': storeLogin,
       };
 

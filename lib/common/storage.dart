@@ -25,7 +25,7 @@ Future<LoginData?> loginDataFromPrefs() async {
 
 Future<void> loginDataToPrefs(LoginData? model) async {
   final prefs = await SharedPreferences.getInstance();
-  await prefs.setString(loginData, json.encode(model?.toJson()));
+  await prefs.setString(loginData, json.encode(model?.toFullJson()));
 }
 
 Future<void> accountDataToPrefs(AccountData? model) async {

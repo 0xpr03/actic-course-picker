@@ -55,7 +55,7 @@ class LoginWidgetState extends State<LoginWidget> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'Please Login',
               ),
               TextFormField(
@@ -108,17 +108,19 @@ class LoginWidgetState extends State<LoginWidget> {
                         const SnackBar(content: Text('Processing Data')));
                     var result = await widget.httpClient!.post(
                         Uri.parse('https://webapi.actic.se/login'),
-                        body: json.encode(formData),
-                        headers: {'content-type': 'application/json'});
+                        body: json.encode(formData.toJson()),
+                        headers: {
+                          'content-type': 'application/json',
+                          "Accept": "*/*",
+                          'Origin': 'https://webapi.actic.se',
+                          'Referer': 'https://meineseiten.acticfitness.de/',
+                        });
                     if (!mounted) return;
-                    if (result.statusCode == 200) {
+                    if (result.statusCode < 400) {
                       try {
                         final parsed = json.decode(result.body);
                         final AccountData loginData =
                             AccountData.fromAPIJson(parsed);
-                        if (!storeLogin) {
-                          formData.password = '';
-                        }
                         accountState.accountData = loginData;
                         accountState.loginData = formData;
                         await accountState.storeToPrefs();
