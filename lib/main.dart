@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:window_size/window_size.dart';
+import 'package:flutter/widgets.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'common/theme.dart';
 import 'models/classes.dart';
@@ -16,12 +18,33 @@ import 'screens/logout.dart';
 import 'screens/relogin.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  var state = await loadFromPrefs();
-  setupWindow();
-  runApp(MyApp(
-    model: state,
-  ));
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          'https://44b9b64e901a450bbd13f4df9fec256a@sentry.vocabletrainer.de/3';
+      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+      // We recommend adjusting this value in production.
+      // options.tracesSampleRate = 1.0;
+    },
+    appRunner: () async {
+      // try {
+      //   var i = null;
+      //   i = i + 1;
+      // } catch (exception, stackTrace) {
+      //   await Sentry.captureException(
+      //     exception,
+      //     stackTrace: stackTrace,
+      //   );
+      // }
+      WidgetsFlutterBinding.ensureInitialized();
+      var state = await loadFromPrefs();
+      setupWindow();
+      runApp(MyApp(
+        model: state,
+      ));
+      // runApp(MyApp())
+    },
+  );
 }
 
 const double windowWidth = 660;
